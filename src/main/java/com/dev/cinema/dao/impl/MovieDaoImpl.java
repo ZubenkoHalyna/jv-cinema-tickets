@@ -24,7 +24,7 @@ public class MovieDaoImpl implements MovieDao {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Enable  to save movie entity", e);
+            throw new RuntimeException("Unable to save movie entity", e);
         }
     }
 
@@ -36,7 +36,7 @@ public class MovieDaoImpl implements MovieDao {
             criteriaQuery.from(Movie.class);
             return session.createQuery(criteriaQuery).getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Enable to get all movies", e);
+            throw new RuntimeException("Unable to get all movies", e);
         }
     }
 }
