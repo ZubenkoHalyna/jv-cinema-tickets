@@ -1,8 +1,5 @@
 package com.dev.cinema;
 
-import com.dev.cinema.model.User;
-import com.dev.cinema.service.ShoppingCartService;
-import com.dev.cinema.service.UserService;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 
@@ -12,10 +9,13 @@ import com.dev.cinema.lib.Injector;
 import com.dev.cinema.model.CinemaHall;
 import com.dev.cinema.model.Movie;
 import com.dev.cinema.model.MovieSession;
+import com.dev.cinema.model.User;
 import com.dev.cinema.security.AuthenticationService;
 import com.dev.cinema.service.CinemaHallService;
 import com.dev.cinema.service.MovieService;
 import com.dev.cinema.service.MovieSessionService;
+import com.dev.cinema.service.ShoppingCartService;
+import com.dev.cinema.service.UserService;
 import java.time.LocalDateTime;
 
 public class Main {
@@ -83,7 +83,6 @@ public class Main {
         } catch (HibernateQueryException e) {
             System.out.println("Can't add not unique login");
         }
-
 
         UserService userService =
                 (UserService) injector.getInstance(UserService.class);
