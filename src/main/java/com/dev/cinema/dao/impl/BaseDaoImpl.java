@@ -1,21 +1,24 @@
 package com.dev.cinema.dao.impl;
 
+import com.dev.cinema.exceptions.HibernateQueryException;
 import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 public abstract class BaseDaoImpl<T> {
     /**
-     *  Provides immediate selecting of data from specified tables by one query to DB
+     * Provides immediate selecting of data from specified tables by one query to DB
      * Use root.fetch to specify the tables.
      *
-     * @param root Root element of CriteriaQuery
+     * @param root - root element of CriteriaQuery
      */
     protected void fetchTables(Root<T> root) {
     }
@@ -32,7 +35,7 @@ public abstract class BaseDaoImpl<T> {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Can't save entity " + item, e);
+            throw new HibernateQueryException("Can't save entity " + item, e);
         } finally {
             session.close();
         }
@@ -45,24 +48,37 @@ public abstract class BaseDaoImpl<T> {
             fetchTables(criteriaQuery.from(clazz));
             return session.createQuery(criteriaQuery).getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Can't get all items for class "
+            throw new HibernateQueryException("Can't get all items for class "
                     + clazz.getSimpleName(), e);
         }
     }
 
-    protected List<T> getWithParams(Class<T> clazz,
-            BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
+    protected List<T> getListWithParams(Class<T> clazz,
+                              BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
+        return getWithParams(clazz, getPredicate, Query::getResultList,
+                "Can't get items by params for class " + clazz.getSimpleName());
+    }
+
+    protected T getWithParams(Class<T> clazz,
+                              BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
+        return getWithParams(clazz, getPredicate, Query::getSingleResult,
+                "Can't get " + clazz.getSimpleName() + " by params");
+    }
+
+    private <R> R getWithParams(Class<T> clazz,
+                                BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate,
+                                Function<Query<T>, R> getResult,
+                                String errorMsg) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteriaQuery = builder.createQuery(clazz);
             Root<T> root = criteriaQuery.from(clazz);
             fetchTables(root);
             criteriaQuery.select(root)
-                         .where(getPredicate.apply(root, builder));
-            return session.createQuery(criteriaQuery).getResultList();
+                    .where(getPredicate.apply(root, builder));
+            return getResult.apply(session.createQuery(criteriaQuery));
         } catch (Exception e) {
-            throw new RuntimeException("Can't get items by params for class "
-                    + clazz.getSimpleName(), e);
+            throw new HibernateQueryException(errorMsg, e);
         }
     }
 }
