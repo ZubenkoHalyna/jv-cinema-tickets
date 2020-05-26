@@ -10,6 +10,7 @@ import com.dev.cinema.service.TicketService;
 public class TicketServiceImpl implements TicketService {
     private static final Injector INJECTOR = Injector.getInstance("com.dev.cinema");
     private TicketDao ticketDao = (TicketDao) INJECTOR.getInstance(TicketDao.class);
+
     @Override
     public Ticket add(Ticket ticket) {
         return ticketDao.add(ticket);
