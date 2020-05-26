@@ -10,7 +10,7 @@ public class UserDaoImpl extends BaseDaoImpl<User>
                          implements UserDao {
     @Override
     public User add(User user) {
-        return super.add(user);
+        return addItem(user);
     }
 
     @Override
