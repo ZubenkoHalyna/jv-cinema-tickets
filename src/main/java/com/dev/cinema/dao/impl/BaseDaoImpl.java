@@ -24,22 +24,12 @@ public abstract class BaseDaoImpl<T> {
     protected void fetchTables(Root<T> root) {
     }
 
-    protected T add(T item) {
-        Transaction transaction = null;
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        try {
-            transaction = session.beginTransaction();
-            session.save(item);
-            transaction.commit();
-            return item;
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw new HibernateQueryException("Can't save entity " + item, e);
-        } finally {
-            session.close();
-        }
+    protected T addItem(T item) {
+        return sessionFunc(item, Session::save);
+    }
+
+    protected T updateItem(T item) {
+        return sessionFunc(item, Session::merge);
     }
 
     protected List<T> getAll(Class<T> clazz) {
@@ -62,12 +52,8 @@ public abstract class BaseDaoImpl<T> {
 
     protected Optional<T> getWithParams(Class<T> clazz,
                               BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
-        T result = getWithParams(clazz, getPredicate, Query::getSingleResult,
+        return getWithParams(clazz, getPredicate, Query::uniqueResultOptional,
                 "Can't get " + clazz.getSimpleName() + " by params");
-        if (result == null) {
-            return Optional.empty();
-        }
-        return Optional.of(result);
     }
 
     private <R> R getWithParams(Class<T> clazz,
@@ -84,6 +70,24 @@ public abstract class BaseDaoImpl<T> {
             return getResult.apply(session.createQuery(criteriaQuery));
         } catch (Exception e) {
             throw new HibernateQueryException(errorMsg, e);
+        }
+    }
+
+    private T sessionFunc(T item, BiFunction<Session, T, ?> sessionFunc) {
+        Transaction transaction = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            transaction = session.beginTransaction();
+            sessionFunc.apply(session, item);
+            transaction.commit();
+            return item;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new HibernateQueryException("Can't save entity " + item, e);
+        } finally {
+            session.close();
         }
     }
 }

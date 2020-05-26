@@ -14,7 +14,7 @@ public class MovieSessionDaoImpl extends BaseDaoImpl<MovieSession>
                                  implements MovieSessionDao {
     @Override
     public MovieSession add(MovieSession movieSession) {
-        return super.add(movieSession);
+        return addItem(movieSession);
     }
 
     @Override
