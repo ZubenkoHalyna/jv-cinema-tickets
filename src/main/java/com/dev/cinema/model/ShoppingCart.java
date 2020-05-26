@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -24,6 +25,7 @@ public class ShoppingCart {
     @ManyToOne(cascade = CascadeType.MERGE)
     private User user;
     @OneToMany(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "shopping_cart_id")
     private List<Ticket> tickets;
 
     public ShoppingCart() {
