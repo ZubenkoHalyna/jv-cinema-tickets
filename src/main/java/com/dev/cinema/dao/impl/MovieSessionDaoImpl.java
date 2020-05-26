@@ -19,7 +19,7 @@ public class MovieSessionDaoImpl extends BaseDaoImpl<MovieSession>
 
     @Override
     public List<MovieSession> findAvailableSessions(Long movieId, LocalDate date) {
-        return getWithParams(MovieSession.class, (root, builder) ->
+        return getListWithParams(MovieSession.class, (root, builder) ->
                         builder.and(
                                 builder.equal(root.get("movie"), movieId),
                                 builder.between(root.get("showTime"),

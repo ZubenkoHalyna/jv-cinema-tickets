@@ -3,10 +3,13 @@ package com.dev.cinema;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 
+import com.dev.cinema.exceptions.AuthenticationException;
+import com.dev.cinema.exceptions.HibernateQueryException;
 import com.dev.cinema.lib.Injector;
 import com.dev.cinema.model.CinemaHall;
 import com.dev.cinema.model.Movie;
 import com.dev.cinema.model.MovieSession;
+import com.dev.cinema.security.AuthenticationService;
 import com.dev.cinema.service.CinemaHallService;
 import com.dev.cinema.service.MovieService;
 import com.dev.cinema.service.MovieSessionService;
@@ -54,5 +57,28 @@ public class Main {
         cinemaHallService.getAll().forEach(System.out::println);
         movieSessionService.findAvailableSessions(movie.getId(), dateTime.toLocalDate())
                 .forEach(System.out::println);
+
+        AuthenticationService authenticationService =
+                (AuthenticationService) injector.getInstance(AuthenticationService.class);
+        String email = "root@ex.com";
+        String password = "root";
+        authenticationService.register(email, password);
+        try {
+            System.out.println(authenticationService.login(email, password));
+        } catch (AuthenticationException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            authenticationService.login(email, "123");
+            System.err.println("Incorrect password allows to login");
+        } catch (AuthenticationException e) {
+            System.out.println("Incorrect password doesn't allows to login");
+        }
+        try {
+            authenticationService.register(email, "123");
+            System.err.println("Login isn't unique");
+        } catch (HibernateQueryException e) {
+            System.out.println("Can't add not unique login");
+        }
     }
 }
