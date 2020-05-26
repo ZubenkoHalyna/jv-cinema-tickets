@@ -9,7 +9,6 @@ import com.dev.cinema.model.ShoppingCart;
 import com.dev.cinema.model.Ticket;
 import com.dev.cinema.model.User;
 import com.dev.cinema.service.ShoppingCartService;
-import java.util.Optional;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -19,16 +18,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private TicketDao ticketDao =
             (TicketDao) INJECTOR.getInstance(TicketDao.class);
 
+    /**
+     * Add ticket for movieSession to user's shopping cart, update orderDate of the
+     * shopping cart.
+     * @param movieSession - movieSession for creating a ticket
+     * @param user - user for finding a shopping cart
+     */
     @Override
     public void addSession(MovieSession movieSession, User user) {
-        ShoppingCart shoppingCart = shoppingCartDao.getByUser(user)
-                .orElse(shoppingCartDao.add(new ShoppingCart(user)));
+        ShoppingCart shoppingCart = shoppingCartDao.getByUser(user);
+        shoppingCartDao.update(shoppingCart);
         Ticket ticket = new Ticket(movieSession, user, shoppingCart);
         ticketDao.add(ticket);
     }
 
     @Override
-    public Optional<ShoppingCart> getByUser(User user) {
+    public ShoppingCart getByUser(User user) {
         return shoppingCartDao.getByUser(user);
     }
 

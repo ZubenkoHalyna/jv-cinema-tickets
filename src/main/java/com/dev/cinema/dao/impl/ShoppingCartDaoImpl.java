@@ -17,9 +17,10 @@ public class ShoppingCartDaoImpl extends BaseDaoImpl<ShoppingCart>
     }
 
     @Override
-    public Optional<ShoppingCart> getByUser(User user) {
+    public ShoppingCart getByUser(User user) {
         return getWithParams(ShoppingCart.class,
-                (root, builder) -> builder.equal(root.get("user").get("id"), user.getId()));
+                (root, builder) -> builder.equal(root.get("user").get("id"), user.getId()))
+                .orElseThrow();
     }
 
     @Override
