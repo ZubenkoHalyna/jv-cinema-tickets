@@ -3,6 +3,7 @@ package com.dev.cinema.dao.impl;
 import com.dev.cinema.exceptions.HibernateQueryException;
 import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -59,10 +60,14 @@ public abstract class BaseDaoImpl<T> {
                 "Can't get items by params for class " + clazz.getSimpleName());
     }
 
-    protected T getWithParams(Class<T> clazz,
-                              BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
-        return getWithParams(clazz, getPredicate, Query::getSingleResult,
+    protected Optional<T> getWithParams(Class<T> clazz,
+                                       BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
+        T result = getWithParams(clazz, getPredicate, Query::getSingleResult,
                 "Can't get " + clazz.getSimpleName() + " by params");
+        if (result == null) {
+            return Optional.empty();
+        }
+        return Optional.of(result);
     }
 
     private <R> R getWithParams(Class<T> clazz,

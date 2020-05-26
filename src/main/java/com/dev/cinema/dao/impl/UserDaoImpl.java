@@ -3,6 +3,7 @@ package com.dev.cinema.dao.impl;
 import com.dev.cinema.dao.UserDao;
 import com.dev.cinema.lib.Dao;
 import com.dev.cinema.model.User;
+import java.util.Optional;
 
 @Dao
 public class UserDaoImpl extends BaseDaoImpl<User>
@@ -13,7 +14,7 @@ public class UserDaoImpl extends BaseDaoImpl<User>
     }
 
     @Override
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return getWithParams(User.class,
                 (root, builder) -> builder.equal(root.get("email"), email));
     }
