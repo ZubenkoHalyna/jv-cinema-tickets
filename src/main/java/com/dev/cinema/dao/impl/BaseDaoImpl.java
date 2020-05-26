@@ -11,6 +11,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public abstract class BaseDaoImpl<T> {
+    /**
+     *  Provides immediate selecting of data from specified tables by one query to DB
+     * Use root.fetch to specify the tables.
+     *
+     * @param root Root element of CriteriaQuery
+     */
     protected void fetchTables(Root<T> root) {
     }
 
