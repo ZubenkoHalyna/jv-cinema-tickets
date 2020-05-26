@@ -4,7 +4,7 @@ import com.dev.cinema.dao.ShoppingCartDao;
 import com.dev.cinema.lib.Dao;
 import com.dev.cinema.model.ShoppingCart;
 import com.dev.cinema.model.User;
-import java.util.Optional;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
@@ -29,8 +29,11 @@ public class ShoppingCartDaoImpl extends BaseDaoImpl<ShoppingCart>
     }
 
     @Override
-    protected void fetchTables(Root<ShoppingCart> root) {
+    protected void fetchFields(Root<ShoppingCart> root) {
         root.fetch("user", JoinType.LEFT);
-        root.fetch("tickets", JoinType.LEFT);
+        Fetch ticketsFetch = root.fetch("tickets", JoinType.LEFT);
+        Fetch movieSessionFetch = ticketsFetch.fetch("movieSession", JoinType.LEFT);
+        movieSessionFetch.fetch("movie", JoinType.LEFT);
+        movieSessionFetch.fetch("cinemaHall", JoinType.LEFT);
     }
 }

@@ -15,7 +15,7 @@ public class TicketDaoImpl extends BaseDaoImpl<Ticket>
     }
 
     @Override
-    protected void fetchTables(Root<Ticket> root) {
+    protected void fetchFields(Root<Ticket> root) {
         root.fetch("user", JoinType.LEFT);
         root.fetch("movieSession", JoinType.LEFT);
     }

@@ -4,6 +4,7 @@ import com.dev.cinema.exceptions.HibernateQueryException;
 import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,12 +17,12 @@ import org.hibernate.query.Query;
 
 public abstract class BaseDaoImpl<T> {
     /**
-     * Provides immediate selecting of data from specified tables by one query to DB
-     * Use root.fetch to specify the tables.
+     * Provides immediate selecting of data for specified fields by one query to DB
+     * Use root.fetch to specify the fields.
      *
      * @param root - root element of CriteriaQuery
      */
-    protected void fetchTables(Root<T> root) {
+    protected void fetchFields(Root<T> root) {
     }
 
     protected T addItem(T item) {
@@ -29,14 +30,14 @@ public abstract class BaseDaoImpl<T> {
     }
 
     protected T updateItem(T item) {
-        return sessionFunc(item, Session::merge);
+        return sessionFunc(item, Session::update);
     }
 
     protected List<T> getAll(Class<T> clazz) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaQuery<T> criteriaQuery = session.getCriteriaBuilder()
                     .createQuery(clazz);
-            fetchTables(criteriaQuery.from(clazz));
+            fetchFields(criteriaQuery.from(clazz));
             return session.createQuery(criteriaQuery).getResultList();
         } catch (Exception e) {
             throw new HibernateQueryException("Can't get all items for class "
@@ -64,7 +65,7 @@ public abstract class BaseDaoImpl<T> {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteriaQuery = builder.createQuery(clazz);
             Root<T> root = criteriaQuery.from(clazz);
-            fetchTables(root);
+            fetchFields(root);
             criteriaQuery.select(root)
                     .where(getPredicate.apply(root, builder));
             return getResult.apply(session.createQuery(criteriaQuery));
@@ -73,12 +74,12 @@ public abstract class BaseDaoImpl<T> {
         }
     }
 
-    private T sessionFunc(T item, BiFunction<Session, T, ?> sessionFunc) {
+    private T sessionFunc(T item, BiConsumer<Session, T> sessionFunc) {
         Transaction transaction = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
             transaction = session.beginTransaction();
-            sessionFunc.apply(session, item);
+            sessionFunc.accept(session, item);
             transaction.commit();
             return item;
         } catch (Exception e) {
