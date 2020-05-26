@@ -1,6 +1,7 @@
 package com.dev.cinema.service.impl;
 
 import com.dev.cinema.dao.ShoppingCartDao;
+import com.dev.cinema.dao.TicketDao;
 import com.dev.cinema.lib.Injector;
 import com.dev.cinema.lib.Service;
 import com.dev.cinema.model.MovieSession;
@@ -15,13 +16,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private static final Injector INJECTOR = Injector.getInstance("com.dev.cinema");
     private ShoppingCartDao shoppingCartDao =
             (ShoppingCartDao) INJECTOR.getInstance(ShoppingCartDao.class);
+    private TicketDao ticketDao =
+            (TicketDao) INJECTOR.getInstance(TicketDao.class);
 
     @Override
     public void addSession(MovieSession movieSession, User user) {
         ShoppingCart shoppingCart = shoppingCartDao.getByUser(user)
-                .orElse(new ShoppingCart(user));
-        shoppingCart.getTickets().add(new Ticket(movieSession, user));
-        shoppingCartDao.update(shoppingCart);
+                .orElse(shoppingCartDao.add(new ShoppingCart(user)));
+        Ticket ticket = new Ticket(movieSession, user, shoppingCart);
+        ticketDao.add(ticket);
     }
 
     @Override

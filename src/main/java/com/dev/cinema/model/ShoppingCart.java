@@ -3,7 +3,6 @@ package com.dev.cinema.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "shopping_cart")
@@ -20,11 +19,11 @@ public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime orderDate;
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     private User user;
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany
     @JoinColumn(name = "shopping_cart_id")
     private List<Ticket> tickets;
 

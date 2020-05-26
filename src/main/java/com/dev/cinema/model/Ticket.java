@@ -17,13 +17,16 @@ public class Ticket {
     private MovieSession movieSession;
     @ManyToOne
     private User user;
+    @ManyToOne
+    private ShoppingCart shoppingCart;
 
     public Ticket() {
     }
 
-    public Ticket(MovieSession movieSession, User user) {
+    public Ticket(MovieSession movieSession, User user, ShoppingCart shoppingCart) {
         this.movieSession = movieSession;
         this.user = user;
+        this.shoppingCart = shoppingCart;
     }
 
     public Long getId() {
