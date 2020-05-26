@@ -62,12 +62,8 @@ public abstract class BaseDaoImpl<T> {
 
     protected Optional<T> getWithParams(Class<T> clazz,
                               BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
-        T result = getWithParams(clazz, getPredicate, Query::getSingleResult,
+        return getWithParams(clazz, getPredicate, Query::uniqueResultOptional,
                 "Can't get " + clazz.getSimpleName() + " by params");
-        if (result == null) {
-            return Optional.empty();
-        }
-        return Optional.of(result);
     }
 
     private <R> R getWithParams(Class<T> clazz,
