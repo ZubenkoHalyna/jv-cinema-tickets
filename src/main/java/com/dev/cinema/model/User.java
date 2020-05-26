@@ -15,6 +15,7 @@ public class User {
     private Long id;
     @Column(unique = true)
     private String email;
+    @Column(name = "password_hash")
     private String passwordHash;
     private String salt;
 

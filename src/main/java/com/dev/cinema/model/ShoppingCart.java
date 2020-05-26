@@ -3,6 +3,7 @@ package com.dev.cinema.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,7 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @UpdateTimestamp
+    @Column(name = "order_date")
     private LocalDateTime orderDate;
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

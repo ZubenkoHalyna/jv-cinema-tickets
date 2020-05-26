@@ -27,7 +27,7 @@ public class Main {
         MovieService movieService = (MovieService) injector.getInstance(MovieService.class);
         movieService.add(movie);
         Movie movie2 = new Movie();
-        movie.setTitle("Fast and Furious 2");
+        movie2.setTitle("Fast and Furious 2");
         movieService.add(movie2);
 
         CinemaHall cinemaHall = new CinemaHall();
