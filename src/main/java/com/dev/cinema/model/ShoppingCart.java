@@ -20,7 +20,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "shopping_cart")
 public class ShoppingCart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @UpdateTimestamp
     @Column(name = "order_date")
