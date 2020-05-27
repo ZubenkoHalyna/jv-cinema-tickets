@@ -10,7 +10,7 @@ public class MovieDaoImpl extends BaseDaoImpl<Movie>
                           implements MovieDao {
     @Override
     public Movie add(Movie movie) {
-        return super.add(movie);
+        return addItem(movie);
     }
 
     @Override

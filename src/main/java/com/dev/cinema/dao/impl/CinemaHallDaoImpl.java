@@ -10,7 +10,7 @@ public class CinemaHallDaoImpl extends BaseDaoImpl<CinemaHall>
                                implements CinemaHallDao {
     @Override
     public CinemaHall add(CinemaHall cinemaHall) {
-        return super.add(cinemaHall);
+        return addItem(cinemaHall);
     }
 
     @Override
