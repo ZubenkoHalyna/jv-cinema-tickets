@@ -9,11 +9,13 @@ import com.dev.cinema.lib.Injector;
 import com.dev.cinema.model.CinemaHall;
 import com.dev.cinema.model.Movie;
 import com.dev.cinema.model.MovieSession;
+import com.dev.cinema.model.ShoppingCart;
 import com.dev.cinema.model.User;
 import com.dev.cinema.security.AuthenticationService;
 import com.dev.cinema.service.CinemaHallService;
 import com.dev.cinema.service.MovieService;
 import com.dev.cinema.service.MovieSessionService;
+import com.dev.cinema.service.OrderService;
 import com.dev.cinema.service.ShoppingCartService;
 import com.dev.cinema.service.UserService;
 import java.time.LocalDateTime;
@@ -58,6 +60,7 @@ public class Main {
 
         movieService.getAll().forEach(System.out::println);
         cinemaHallService.getAll().forEach(System.out::println);
+        System.out.println("Available sessions:");
         movieSessionService.findAvailableSessions(movie.getId(), dateTime.toLocalDate())
                 .forEach(System.out::println);
 
@@ -92,6 +95,18 @@ public class Main {
         shoppingCartService.addSession(movieSession, user);
         System.out.println(shoppingCartService.getByUser(user));
         shoppingCartService.addSession(movieSession, user);
+        ShoppingCart shoppingCart = shoppingCartService.getByUser(user);
+        System.out.println(shoppingCart);
+
+        OrderService orderService = (OrderService) injector.getInstance(OrderService.class);
+        orderService.completeOrder(shoppingCart.getTickets(), user);
+        System.out.println(shoppingCartService.getByUser(user));
+        orderService.getOrderHistory(user).forEach(System.out::println);
+
+        shoppingCartService.addSession(movieSession, user);
+        shoppingCartService.addSession(movieSession, user);
+        System.out.println(shoppingCartService.getByUser(user));
+        shoppingCartService.clear(shoppingCartService.getByUser(user));
         System.out.println(shoppingCartService.getByUser(user));
     }
 }

@@ -13,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
 
 public abstract class BaseDaoImpl<T> {
@@ -26,19 +27,21 @@ public abstract class BaseDaoImpl<T> {
     }
 
     protected T addItem(T item) {
-        return sessionFunc(item, Session::save);
+        return sessionFunc(item, Session::save, "Can't save entity " + item);
     }
 
     protected T updateItem(T item) {
-        return sessionFunc(item, Session::update);
+        return sessionFunc(item, Session::update, "Can't save entity " + item);
     }
 
     protected List<T> getAll(Class<T> clazz) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaQuery<T> criteriaQuery = session.getCriteriaBuilder()
-                    .createQuery(clazz);
+                    .createQuery(clazz).distinct(true);
             fetchFields(criteriaQuery.from(clazz));
-            return session.createQuery(criteriaQuery).getResultList();
+            return session.createQuery(criteriaQuery)
+                    .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
+                    .getResultList();
         } catch (Exception e) {
             throw new HibernateQueryException("Can't get all items for class "
                     + clazz.getSimpleName(), e);
@@ -63,18 +66,19 @@ public abstract class BaseDaoImpl<T> {
                                 String errorMsg) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<T> criteriaQuery = builder.createQuery(clazz);
+            CriteriaQuery<T> criteriaQuery = builder.createQuery(clazz).distinct(true);
             Root<T> root = criteriaQuery.from(clazz);
             fetchFields(root);
             criteriaQuery.select(root)
                     .where(getPredicate.apply(root, builder));
-            return getResult.apply(session.createQuery(criteriaQuery));
+            return getResult.apply(session.createQuery(criteriaQuery)
+                    .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false));
         } catch (Exception e) {
             throw new HibernateQueryException(errorMsg, e);
         }
     }
 
-    private T sessionFunc(T item, BiConsumer<Session, T> sessionFunc) {
+    private T sessionFunc(T item, BiConsumer<Session, T> sessionFunc, String errorMsg) {
         Transaction transaction = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
@@ -86,7 +90,7 @@ public abstract class BaseDaoImpl<T> {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new HibernateQueryException("Can't save entity " + item, e);
+            throw new HibernateQueryException(errorMsg, e);
         } finally {
             session.close();
         }
