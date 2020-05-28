@@ -28,14 +28,16 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User user;
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private List<Ticket> tickets;
 
     public Order() {
     }
 
-    public Order(User user) {
+    public Order(User user, List<Ticket> tickets) {
         this.user = user;
+        this.tickets = tickets;
     }
 
     public Long getId() {

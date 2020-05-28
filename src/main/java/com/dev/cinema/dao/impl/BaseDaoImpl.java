@@ -3,15 +3,12 @@ package com.dev.cinema.dao.impl;
 import com.dev.cinema.exceptions.HibernateQueryException;
 import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
@@ -30,12 +27,11 @@ public abstract class BaseDaoImpl<T> {
     }
 
     protected T addItem(T item) {
-        executeTransactional(session -> session.save(item), "Can't save entity " + item);
-        return item;
+        return sessionFunc(item, Session::save, "Can't save entity " + item);
     }
 
-    protected void updateItem(T item) {
-        executeTransactional(session -> session.update(item), "Can't update entity " + item);
+    protected T updateItem(T item) {
+        return sessionFunc(item, Session::update, "Can't save entity " + item);
     }
 
     protected List<T> getAll(Class<T> clazz) {
@@ -82,36 +78,14 @@ public abstract class BaseDaoImpl<T> {
         }
     }
 
-    protected void deleteWithParams(Class<T> clazz,
-                                    BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate) {
-        executeTransactional(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaDelete<T> query = builder.createCriteriaDelete(clazz);
-            query.where(getPredicate.apply(query.from(clazz), builder));
-            session.createQuery(query).executeUpdate();
-        }, "Can't delete items by params for class " + clazz.getSimpleName());
-    }
-
-    protected void updateWithParams(Class<T> clazz,
-                                    BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate,
-                                    Map<String, Object> setMap) {
-        executeTransactional(session -> {
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaUpdate<T> query = builder.createCriteriaUpdate(clazz);
-            query.where(getPredicate.apply(query.from(clazz), builder));
-            setMap.forEach(query::set);
-            session.createQuery(query).executeUpdate();
-        }, "Can't update items by params for class " + clazz.getSimpleName());
-    }
-
-    private void executeTransactional(Consumer<Session> executeWithTransaction,
-                                      String errorMsg) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+    private T sessionFunc(T item, BiConsumer<Session, T> sessionFunc, String errorMsg) {
         Transaction transaction = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
         try {
             transaction = session.beginTransaction();
-            executeWithTransaction.accept(session);
+            sessionFunc.accept(session, item);
             transaction.commit();
+            return item;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
