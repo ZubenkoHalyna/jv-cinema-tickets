@@ -19,7 +19,7 @@ public class ShoppingCartDaoImpl extends BaseDaoImpl<ShoppingCart>
     @Override
     public ShoppingCart getByUser(User user) {
         return getWithParams(ShoppingCart.class,
-                (root, builder) -> builder.equal(root.get("user").get("id"), user.getId()))
+                (root, builder) -> builder.equal(root.get("user"), user))
                 .orElseThrow();
     }
 
@@ -29,8 +29,14 @@ public class ShoppingCartDaoImpl extends BaseDaoImpl<ShoppingCart>
     }
 
     @Override
+    public void clear(ShoppingCart shoppingCart) {
+        shoppingCart.getTickets().clear();
+        updateItem(shoppingCart);
+    }
+
+    @Override
     protected void fetchFields(Root<ShoppingCart> root) {
-        root.fetch("user", JoinType.LEFT);
+        root.fetch("user", JoinType.INNER);
         Fetch ticketsFetch = root.fetch("tickets", JoinType.LEFT);
         Fetch movieSessionFetch = ticketsFetch.fetch("movieSession", JoinType.LEFT);
         movieSessionFetch.fetch("movie", JoinType.LEFT);
