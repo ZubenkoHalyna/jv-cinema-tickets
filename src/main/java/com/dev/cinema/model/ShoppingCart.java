@@ -14,6 +14,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
 
@@ -33,6 +34,7 @@ public class ShoppingCart {
     @OneToMany(mappedBy = "user", orphanRemoval = true,
             fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Where(clause = "order_id IS NULL")
+    @BatchSize(size = 5)
     private List<Ticket> tickets;
 
     public ShoppingCart() {

@@ -105,6 +105,11 @@ public class Main {
 
         shoppingCartService.addSession(movieSession, user);
         shoppingCartService.addSession(movieSession, user);
+        shoppingCartService.addSession(movieSession, user);
+        shoppingCartService.addSession(movieSession, user);
+        shoppingCartService.addSession(movieSession, user);
+        shoppingCartService.addSession(movieSession, user);
+        shoppingCartService.addSession(movieSession, user);
         System.out.println(shoppingCartService.getByUser(user));
         shoppingCartService.clear(shoppingCartService.getByUser(user));
         System.out.println(shoppingCartService.getByUser(user));
