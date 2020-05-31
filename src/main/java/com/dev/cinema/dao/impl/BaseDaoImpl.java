@@ -1,6 +1,7 @@
 package com.dev.cinema.dao.impl;
 
 import com.dev.cinema.exceptions.HibernateQueryException;
+import com.dev.cinema.model.BaseEntity;
 import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ import org.hibernate.Transaction;
 import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
 
-public abstract class BaseDaoImpl<T> {
+public abstract class BaseDaoImpl<T extends BaseEntity> {
     /**
      * Provides immediate selecting of data for specified fields by one query to DB
      * Use root.fetch to specify the fields.

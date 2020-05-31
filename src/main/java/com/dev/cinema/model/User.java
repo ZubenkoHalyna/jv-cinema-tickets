@@ -2,30 +2,16 @@ package com.dev.cinema.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends BaseEntity {
     @Column(unique = true)
     private String email;
     @Column(name = "password_hash")
     private String passwordHash;
     private String salt;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getEmail() {
         return email;
@@ -54,7 +40,7 @@ public class User {
     @Override
     public String toString() {
         return "User{"
-                + "id=" + id
+                + "id=" + getId()
                 + ", email='" + email + '\''
                 + ", passwordHash='" + passwordHash + '\''
                 + ", salt='" + salt + '\''

@@ -1,27 +1,13 @@
 package com.dev.cinema.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "cinema_halls")
-public class CinemaHall {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CinemaHall extends BaseEntity {
     private int capacity;
     private String description;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public int getCapacity() {
         return capacity;
@@ -42,7 +28,7 @@ public class CinemaHall {
     @Override
     public String toString() {
         return "CinemaHall{"
-                + "id=" + id
+                + "id=" + getId()
                 + ", capacity=" + capacity
                 + ", description='" + description + '\''
                 + '}';

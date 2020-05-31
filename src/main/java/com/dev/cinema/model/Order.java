@@ -6,9 +6,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -17,10 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "orders")
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Order extends BaseEntity {
     @UpdateTimestamp
     @Column(name = "order_date")
     private LocalDateTime orderDate;
@@ -38,14 +32,6 @@ public class Order {
     public Order(User user, List<Ticket> tickets) {
         this.user = user;
         this.tickets = tickets;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public LocalDateTime getOrderDate() {
@@ -75,7 +61,7 @@ public class Order {
     @Override
     public String toString() {
         return "Order{"
-                + "id=" + id
+                + "id=" + getId()
                 + ", orderDate=" + orderDate
                 + ", user=" + user
                 + ", tickets=" + tickets

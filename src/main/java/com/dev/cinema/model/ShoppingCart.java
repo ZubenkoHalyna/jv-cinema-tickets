@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
@@ -19,9 +18,7 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "shopping_carts")
-public class ShoppingCart {
-    @Id
-    private Long id;
+public class ShoppingCart extends BaseEntity {
     @UpdateTimestamp
     @Column(name = "order_date")
     private LocalDateTime orderDate;
@@ -41,14 +38,6 @@ public class ShoppingCart {
     public ShoppingCart(User user) {
         this.user = user;
         tickets = new ArrayList<>();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public LocalDateTime getOrderDate() {
@@ -78,7 +67,7 @@ public class ShoppingCart {
     @Override
     public String toString() {
         return "ShoppingCart{"
-                + "id=" + id
+                + "id=" + getId()
                 + ", orderDate=" + orderDate
                 + ", user=" + user
                 + ", tickets=" + tickets
