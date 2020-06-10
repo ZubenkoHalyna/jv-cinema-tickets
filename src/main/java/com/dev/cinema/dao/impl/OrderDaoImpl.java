@@ -1,17 +1,25 @@
 package com.dev.cinema.dao.impl;
 
 import com.dev.cinema.dao.OrderDao;
-import com.dev.cinema.lib.Dao;
 import com.dev.cinema.model.Order;
 import com.dev.cinema.model.User;
 import java.util.List;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 
-@Dao
+@Repository
 public class OrderDaoImpl extends BaseDaoImpl<Order>
                           implements OrderDao {
+    private SessionFactory sessionFactory;
+
+    public OrderDaoImpl(SessionFactory sessionFactory) {
+        super(sessionFactory);
+        this.sessionFactory = sessionFactory;
+    }
+
     @Override
     public Order add(Order order) {
         return addItem(order);

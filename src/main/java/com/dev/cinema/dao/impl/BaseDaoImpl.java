@@ -1,7 +1,6 @@
 package com.dev.cinema.dao.impl;
 
 import com.dev.cinema.exceptions.HibernateQueryException;
-import com.dev.cinema.util.HibernateUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -12,11 +11,18 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
 
 public abstract class BaseDaoImpl<T> {
+    private SessionFactory sessionFactory;
+
+    public BaseDaoImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
     /**
      * Provides immediate selecting of data for specified fields by one query to DB
      * Use root.fetch to specify the fields.
@@ -35,7 +41,7 @@ public abstract class BaseDaoImpl<T> {
     }
 
     protected List<T> getAll(Class<T> clazz) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             CriteriaQuery<T> criteriaQuery = session.getCriteriaBuilder()
                     .createQuery(clazz).distinct(true);
             fetchFields(criteriaQuery.from(clazz));
@@ -64,7 +70,7 @@ public abstract class BaseDaoImpl<T> {
                                 BiFunction<Root<T>, CriteriaBuilder, Predicate> getPredicate,
                                 Function<Query<T>, R> getResult,
                                 String errorMsg) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteriaQuery = builder.createQuery(clazz).distinct(true);
             Root<T> root = criteriaQuery.from(clazz);
@@ -80,7 +86,7 @@ public abstract class BaseDaoImpl<T> {
 
     private T sessionFunc(T item, BiConsumer<Session, T> sessionFunc, String errorMsg) {
         Transaction transaction = null;
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = sessionFactory.openSession();
         try {
             transaction = session.beginTransaction();
             sessionFunc.accept(session, item);

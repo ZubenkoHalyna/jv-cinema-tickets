@@ -1,17 +1,25 @@
 package com.dev.cinema.dao.impl;
 
 import com.dev.cinema.dao.MovieSessionDao;
-import com.dev.cinema.lib.Dao;
 import com.dev.cinema.model.MovieSession;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 
-@Dao
+@Repository
 public class MovieSessionDaoImpl extends BaseDaoImpl<MovieSession>
                                  implements MovieSessionDao {
+    private SessionFactory sessionFactory;
+
+    public MovieSessionDaoImpl(SessionFactory sessionFactory) {
+        super(sessionFactory);
+        this.sessionFactory = sessionFactory;
+    }
+
     @Override
     public MovieSession add(MovieSession movieSession) {
         return addItem(movieSession);
