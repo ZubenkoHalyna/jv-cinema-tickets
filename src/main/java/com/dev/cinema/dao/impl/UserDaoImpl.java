@@ -1,13 +1,21 @@
 package com.dev.cinema.dao.impl;
 
 import com.dev.cinema.dao.UserDao;
-import com.dev.cinema.lib.Dao;
 import com.dev.cinema.model.User;
 import java.util.Optional;
+import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
 
-@Dao
+@Repository
 public class UserDaoImpl extends BaseDaoImpl<User>
                          implements UserDao {
+    private SessionFactory sessionFactory;
+
+    public UserDaoImpl(SessionFactory sessionFactory) {
+        super(sessionFactory);
+        this.sessionFactory = sessionFactory;
+    }
+
     @Override
     public User add(User user) {
         return addItem(user);

@@ -1,19 +1,21 @@
 package com.dev.cinema.service.impl;
 
 import com.dev.cinema.dao.UserDao;
-import com.dev.cinema.lib.Injector;
-import com.dev.cinema.lib.Service;
 import com.dev.cinema.model.User;
 import com.dev.cinema.service.ShoppingCartService;
 import com.dev.cinema.service.UserService;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private static final Injector INJECTOR = Injector.getInstance("com.dev.cinema");
-    private UserDao userDao = (UserDao) INJECTOR.getInstance(UserDao.class);
-    private ShoppingCartService shoppingCartService =
-            (ShoppingCartService) INJECTOR.getInstance(ShoppingCartService.class);
+    private UserDao userDao;
+    private ShoppingCartService shoppingCartService;
+
+    public UserServiceImpl(UserDao userDao, ShoppingCartService shoppingCartService) {
+        this.userDao = userDao;
+        this.shoppingCartService = shoppingCartService;
+    }
 
     @Override
     public User add(User user) {

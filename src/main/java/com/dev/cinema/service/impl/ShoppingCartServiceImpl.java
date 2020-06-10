@@ -2,21 +2,22 @@ package com.dev.cinema.service.impl;
 
 import com.dev.cinema.dao.ShoppingCartDao;
 import com.dev.cinema.dao.TicketDao;
-import com.dev.cinema.lib.Injector;
-import com.dev.cinema.lib.Service;
 import com.dev.cinema.model.MovieSession;
 import com.dev.cinema.model.ShoppingCart;
 import com.dev.cinema.model.Ticket;
 import com.dev.cinema.model.User;
 import com.dev.cinema.service.ShoppingCartService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
-    private static final Injector INJECTOR = Injector.getInstance("com.dev.cinema");
-    private ShoppingCartDao shoppingCartDao =
-            (ShoppingCartDao) INJECTOR.getInstance(ShoppingCartDao.class);
-    private TicketDao ticketDao =
-            (TicketDao) INJECTOR.getInstance(TicketDao.class);
+    private ShoppingCartDao shoppingCartDao;
+    private TicketDao ticketDao;
+
+    public ShoppingCartServiceImpl(ShoppingCartDao shoppingCartDao, TicketDao ticketDao) {
+        this.shoppingCartDao = shoppingCartDao;
+        this.ticketDao = ticketDao;
+    }
 
     /**
      * Add ticket for movieSession to user's shopping cart, update orderDate of the
